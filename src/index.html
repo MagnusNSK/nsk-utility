@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NSK Utility</title>
+    <meta name="description" content="NSK International Software - Time and Note Tracking Application" />
+    <meta name="robots" content="index, follow" />
+    <link rel="icon" href="fav.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <div id="titleBar">
+      <div class="titleBar-left">
+        <button class="nav-button active" onclick="window.location.href='index.html'">time-tracker</button>
+        <button class="nav-button" onclick="window.location.href='notes.html'">note-pad</button>
+        <button class="nav-button" onclick="window.location.href='stopwatch.html'">stop-watch</button>
+      </div>
+      <div class="titleBar-middle"></div>
+      <div class="titleBar-right">
+        <button class="title-button" id="minimizeBtn">[-]</button>
+        <button class="title-button" id="maximizeBtn">[□]</button>
+        <button class="title-button" id="closeBtn">[x]</button>
+      </div>
+    </div>
+    <div id="buttonContainer">
+      <button class="button-link" onclick="deleteLastRow()">Delete Last Row</button>
+      <button class="button-link" onclick="deleteAllData()">Delete All Data</button>
+      <button class="button-link" onclick="saveToFile()">Save To File</button>
+      <button class="button-link" onclick="loadFromFile()">Load From File</button>
+      <button class="button-link" onclick="addTestData()">Data Debug</button>
+    </div>
+    <div id="container">
+      <div id="markdownOutput"></div>
+    </div>
+    <input type="text" id="dateInput" placeholder="mm/dd" autocomplete="off" data-form-type="other">
+    <div id="currentDate"></div>
+    <div id="currentTime"></div>
+    <script src="common.js"></script>
+    <script src="popup.js"></script>
+    <script src="titlebar.js"></script>
+    <script type="module" src="main.js" defer></script>
+  </body>
+</html>

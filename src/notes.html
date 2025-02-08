@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NSK Utility</title>
+    <meta name="description" content="NSK International Software - Time and Note Tracking Application" />
+    <meta name="robots" content="index, follow" />
+    <link rel="icon" href="fav.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <div id="titleBar">
+      <div class="titleBar-left">
+        <button class="nav-button" onclick="window.location.href='index.html'">time-tracker</button>
+        <button class="nav-button active" onclick="window.location.href='notes.html'">note-pad</button>
+        <button class="nav-button" onclick="window.location.href='stopwatch.html'">stop-watch</button>
+      </div>
+      <div class="titleBar-middle"></div>
+      <div class="titleBar-right">
+        <button class="title-button" id="minimizeBtn">[-]</button>
+        <button class="title-button" id="maximizeBtn">[□]</button>
+        <button class="title-button" id="closeBtn">[x]</button>
+      </div>
+    </div>
+    <div id="editor-container">
+      <textarea id="editor" spellcheck="false" autocomplete="off" data-form-type="other" placeholder="[start typing here]"></textarea>
+    </div>
+    <div id="status-bar">
+      <div class="status-left">
+        <div id="file-operations">
+          <button class="file-button" id="fileBtn">file</button>
+        </div>
+        <span id="line-count"></span>
+      </div>
+      <div id="tabs"></div>
+    </div>
+    <script src="common.js"></script>
+    <script src="titlebar.js"></script>
+    <script src="popup.js"></script>
+    <script src="notes.js"></script>
+  </body>
+</html> 
