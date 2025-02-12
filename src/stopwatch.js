@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const { readTextFile } = window.__TAURI__.fs;
             
             const resDir = await resourceDir();
-            const filePath = await join(resDir, 'data', 'tracker-data.json');
+            const filePath = await join(resDir, window.DATA_DIR, 'tracker-data.json');
             
             try {
                 const content = await readTextFile(filePath);
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const { writeTextFile, createDir } = window.__TAURI__.fs;
             
             const resDir = await resourceDir();
-            const dataDir = await join(resDir, 'data');
+            const dataDir = await join(resDir, window.DATA_DIR);
             await createDir(dataDir, { recursive: true });
             
             const filePath = await join(dataDir, 'stopwatch-data.json');
@@ -88,6 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (state.isRunning) {
                 state.isRunning = false;
                 clearInterval(state.timerInterval);
+                state.elapsedTime = Date.now() - state.startTime;
+                timer.updateDisplay();
                 timer.updateButtons(false);
                 fsUtils.saveStopwatchState();
             }
@@ -127,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const { createDir, writeTextFile } = window.__TAURI__.fs;
             
             const resDir = await resourceDir();
-            const dataDir = await join(resDir, 'data');
+            const dataDir = await join(resDir, window.DATA_DIR);
             await createDir(dataDir, { recursive: true });
             
             const data = await fsUtils.readTrackerData();
@@ -163,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
             message: 'Select column to add to:',
             type: 'custom',
             buttons: columnButtons,
-            onCancel: () => {} // Allow clicking outside to close
+            onCancel: () => {}
         });
     }
 
@@ -174,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         try {
             const { join } = window.__TAURI__.path;
-            const filePath = await join(resDir, 'data', 'tracker-data.json');
+            const filePath = await join(resDir, window.DATA_DIR, 'tracker-data.json');
             const trackerData = await fsUtils.readTrackerData();
             
             if (trackerData.tableData?.length) {
@@ -184,7 +186,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (lastRow[colKey]) {
                     const [existingHours, existingMinutes] = lastRow[colKey].split(':').map(Number);
                     const totalMinutes = (existingHours * 60 + existingMinutes) + (hours * 60 + minutes);
-                    lastRow[colKey] = `${Math.floor(totalMinutes / 60).toString().padStart(2, '0')}:${(totalMinutes % 60).toString().padStart(2, '0')}`;
+                    const newHours = Math.floor(totalMinutes / 60);
+                    const newMinutes = totalMinutes % 60;
+                    lastRow[colKey] = `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}`;
                 } else {
                     lastRow[colKey] = timeString;
                 }
@@ -222,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const { readTextFile } = window.__TAURI__.fs;
             
             const resDir = await resourceDir();
-            const filePath = await join(resDir, 'data', 'stopwatch-data.json');
+            const filePath = await join(resDir, window.DATA_DIR, 'stopwatch-data.json');
             const content = await readTextFile(filePath);
             const data = JSON.parse(content);
             
@@ -241,4 +245,52 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     init();
+
+    registerTabSwitchCallback(async () => {
+        if (state.isRunning) {
+            timer.pause();
+            
+            return new Promise(resolve => {
+                createPopup({
+                    message: 'The timer has been paused. You can safely switch tab now.',
+                    type: 'confirm',
+                    confirmText: 'Switch Tab',
+                    cancelText: 'Resume Timer',
+                    onConfirm: () => resolve(true),
+                    onCancel: () => {
+                        timer.start();
+                        resolve(false);
+                    }
+                });
+            });
+        }
+        return true;
+    });
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && state.isRunning) {
+            timer.pause();
+        }
+    });
+
+    window.registerCloseCallback(async () => {
+        if (state.isRunning) {
+            timer.pause();
+            
+            return new Promise(resolve => {
+                createPopup({
+                    message: 'The timer has been paused. You can safely close the application now.',
+                    type: 'confirm',
+                    confirmText: 'Close App',
+                    cancelText: 'Resume Timer',
+                    onConfirm: () => resolve(true),
+                    onCancel: () => {
+                        timer.start();
+                        resolve(false);
+                    }
+                });
+            });
+        }
+        return true;
+    });
 }); 

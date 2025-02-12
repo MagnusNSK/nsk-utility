@@ -1,6 +1,6 @@
 [package]
 name = "nsk-utility"
-version = "0.5.9"
+version = "1.0.0"
 description = "A Time Tracker, Notepad, and Stopwatch"
 authors = ["NSK International Software"]
 edition = "2021"

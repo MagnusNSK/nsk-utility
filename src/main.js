@@ -441,7 +441,7 @@ async function loadFromFile() {
 async function saveToLocalStorage() {
     try {
         const resDir = await resourceDir();
-        const appDir = await join(resDir, 'data');
+        const appDir = await join(resDir, window.DATA_DIR);
         await createDir(appDir, { recursive: true });
         
         const dataToSave = {
@@ -461,7 +461,7 @@ async function saveToLocalStorage() {
 async function loadFromLocalStorage() {
     try {
         const resDir = await resourceDir();
-        const filePath = await join(resDir, 'data', 'tracker-data.json');
+        const filePath = await join(resDir, window.DATA_DIR, 'tracker-data.json');
         const content = await readTextFile(filePath);
         
         const loadedData = JSON.parse(content);

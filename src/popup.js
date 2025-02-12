@@ -58,19 +58,25 @@ function createPopup(options) {
     popup.appendChild(buttonContainer);
     overlay.appendChild(popup);
     
-    // Add click handler to overlay
     overlay.addEventListener('click', (e) => {
-        // If the click is directly on the overlay (not on popup or its children)
         if (e.target === overlay) {
             document.body.removeChild(overlay);
             if (options.onCancel) options.onCancel();
         }
     });
 
-    // Add click handler to popup for preventing click propagation
     popup.addEventListener('click', (e) => {
         e.stopPropagation();
     });
     
     document.body.appendChild(overlay);
+
+    return {
+        close: () => {
+            if (document.body.contains(overlay)) {
+                document.body.removeChild(overlay);
+            }
+        },
+        element: overlay
+    };
 } 

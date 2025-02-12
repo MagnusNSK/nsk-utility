@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }];
     let activeTab = 1;
     let filePopup = null;
+    let fontSize = 14;
 
     async function saveToLocalStorage() {
         try {
@@ -27,19 +28,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const { createDir, writeTextFile } = window.__TAURI__.fs;
             
             const resDir = await resourceDir();
-            const appDir = await join(resDir, 'data');
+            const appDir = await join(resDir, window.DATA_DIR);
             await createDir(appDir, { recursive: true });
             
-            const dataToSave = {
-                tabs: tabs.map(tab => ({
-                    ...tab,
-                    lastModified: new Date().toISOString()
-                })),
-                activeTab: activeTab
-            };
-            
             const filePath = await join(appDir, 'notes-data.json');
-            await writeTextFile(filePath, JSON.stringify(dataToSave, null, 2));
+            await writeTextFile(filePath, JSON.stringify({
+                tabs,
+                activeTab
+            }, null, 2));
         } catch (error) {
             console.error('Error saving to storage:', error);
         }
@@ -51,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const { readTextFile } = window.__TAURI__.fs;
             
             const resDir = await resourceDir();
-            const filePath = await join(resDir, 'data', 'notes-data.json');
+            const filePath = await join(resDir, window.DATA_DIR, 'notes-data.json');
             const content = await readTextFile(filePath);
             
             const loadedData = JSON.parse(content);
@@ -129,6 +125,34 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.view-all-tabs')?.addEventListener('click', showAllTabs);
     }
 
+    async function loadFontSize() {
+        try {
+            const settings = await window.loadSettings();
+            if (settings.fontSize) {
+                fontSize = settings.fontSize;
+                editor.style.fontSize = `${fontSize}px`;
+            }
+        } catch (error) {
+            console.warn('No saved font settings found:', error);
+        }
+    }
+
+    async function saveFontSize() {
+        try {
+            const settings = await window.loadSettings();
+            settings.fontSize = fontSize;
+            await window.saveSettings(settings);
+        } catch (error) {
+            console.error('Error saving font settings:', error);
+        }
+    }
+
+    function updateFontSize(newSize) {
+        fontSize = Math.max(8, Math.min(72, newSize));
+        editor.style.fontSize = `${fontSize}px`;
+        saveFontSize();
+    }
+
     function showFilePopup() {
         if (filePopup) {
             filePopup.remove();
@@ -136,89 +160,87 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        createPopup({
+        const popup = createPopup({
             message: `
                 <div class="popup-buttons">
                     <div class="popup-button-container">
-                        <button class="button-link" id="newTab">New Tab</button>
+                        <button class="button-link" id="newTabBtn">New Tab</button>
                         <span class="shortcut">Ctrl+T</span>
                     </div>
                     <div class="popup-button-container">
-                        <button class="button-link" id="closeTab">Close Tab</button>
+                        <button class="button-link" id="closeTabBtn">Close Tab</button>
                         <span class="shortcut">Ctrl+W</span>
                     </div>
                     <div class="popup-button-container">
-                        <button class="button-link" id="saveFile">Save File</button>
+                        <button class="button-link" id="saveFileBtn">Save File</button>
                         <span class="shortcut">Ctrl+S</span>
                     </div>
                     <div class="popup-button-container">
-                        <button class="button-link" id="loadFile">Load File</button>
+                        <button class="button-link" id="loadFileBtn">Load File</button>
                         <span class="shortcut">Ctrl+O</span>
+                    </div>
+                    <div class="popup-button-container">
+                        <span>Font Size:</span>
+                        <input type="text" id="fontSizeInput" value="${fontSize}" class="font-size-input">
+                        <span class="shortcut">Ctrl+Scroll</span>
                     </div>
                 </div>
             `,
             type: 'custom',
-            buttons: [
-                {
-                    text: 'New Tab',
-                    onClick: () => addNewTab()
-                },
-                {
-                    text: 'Close Tab',
-                    onClick: () => closeTab(activeTab)
-                },
-                {
-                    text: 'Save File',
-                    onClick: saveFile
-                },
-                {
-                    text: 'Load File',
-                    onClick: loadFile
-                }
-            ],
+            buttons: [],
             onCancel: () => {}
+        });
+
+        document.getElementById('newTabBtn').addEventListener('click', () => {
+            addNewTab();
+            popup.close();
+        });
+        document.getElementById('closeTabBtn').addEventListener('click', () => {
+            closeTab(activeTab);
+            popup.close();
+        });
+        document.getElementById('saveFileBtn').addEventListener('click', () => {
+            saveFile();
+            popup.close();
+        });
+        document.getElementById('loadFileBtn').addEventListener('click', () => {
+            loadFile();
+            popup.close();
+        });
+
+        const fontSizeInput = document.getElementById('fontSizeInput');
+        fontSizeInput.addEventListener('change', (e) => {
+            const newSize = parseInt(e.target.value);
+            if (!isNaN(newSize)) {
+                updateFontSize(newSize);
+            }
+            popup.close();
         });
     }
 
     window.showAllTabs = function() {
-        const overlay = document.createElement('div');
-        overlay.className = 'overlay';
-        
-        const popup = document.createElement('div');
-        popup.className = 'popup';
-        
-        const content = document.createElement('div');
-        content.className = 'popup-content';
-
-        const sortedTabs = [...tabs].sort((a, b) => (b.lastUsed || 0) - (a.lastUsed || 0));
-        
-        content.innerHTML = `
-            <div class="popup-buttons view-all-tabs-grid">
-                ${sortedTabs.map(tab => `
-                    <div class="popup-button-container">
-                        <button class="button-link" data-id="${tab.id}">
-                            ${tab.filename}${tab.isModified ? '*' : ''}
-                        </button>
-                    </div>
-                `).join('')}
-            </div>
-        `;
-        
-        popup.appendChild(content);
-        overlay.appendChild(popup);
-        document.body.appendChild(overlay);
-
-        popup.querySelectorAll('.button-link').forEach(button => {
-            button.addEventListener('click', () => {
-                switchTab(parseInt(button.dataset.id));
-                overlay.remove();
-            });
+        const popup = createPopup({
+            message: `
+                <div class="popup-buttons view-all-tabs-grid">
+                    ${[...tabs].sort((a, b) => (b.lastUsed || 0) - (a.lastUsed || 0)).map(tab => `
+                        <div class="popup-button-container">
+                            <button class="button-link" data-id="${tab.id}">
+                                ${tab.filename}${tab.isModified ? '*' : ''}
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+            `,
+            type: 'custom',
+            buttons: [],
+            onCancel: () => {}
         });
 
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) {
-                overlay.remove();
-            }
+        popup.element.querySelectorAll('.button-link').forEach(button => {
+            button.addEventListener('click', () => {
+                switchTab(parseInt(button.dataset.id));
+                popup.close();
+            });
         });
     }
 
@@ -367,10 +389,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    editor.addEventListener('wheel', (e) => {
+        if (e.ctrlKey) {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -1 : 1;
+            updateFontSize(fontSize + delta);
+        }
+    });
+
     fileBtn.addEventListener('click', showFilePopup);
 
+    loadFontSize();
     updateLineCount();
     updateTabs();
-
     loadFromLocalStorage();
-}); 
+});
+
+function showColumnSelectionPopup(timeColumns, resDir) {
+    const columnButtons = timeColumns.map(column => ({
+        text: column.name,
+        onClick: () => handleColumnSelection(column, resDir)
+    }));
+
+    createPopup({
+        message: 'Select column to add to:',
+        type: 'custom',
+        buttons: columnButtons,
+        onCancel: () => {}
+    });
+} 

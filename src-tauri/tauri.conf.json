@@ -7,7 +7,7 @@
   },
   "package": {
     "productName": "NSK Utility",
-    "version": "0.9.9"
+    "version": "1.0.0"
   },
   "tauri": {
     "allowlist": {
@@ -57,7 +57,7 @@
     },
     "bundle": {
       "active": true,
-      "targets": "all",
+      "targets": ["app"],
       "identifier": "com.nsk.utility",
       "icon": [
         "icons/fav32x32.ico",
