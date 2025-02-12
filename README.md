@@ -1,73 +1,35 @@
-<<<<<<< HEAD
 <div align="center">
 
-# WORK IN PROGRESS
+# Data/stat tracking tool, with notepad
 
 </div>
 
-## Table of Contents
+### Table of Contents
 
-*   [Features](#features)
-*   [Installation](#installation)
-*   [Usage](#usage)
-*   [Contributing](#contributing)
-*   [License](#license)
-*   [Support](#support)
-
-
-## Features
-
-**Data Tracking Chart:** (Placeholder: Describe the chart's functionality and customization options.)
-**Notepad:** (Placeholder: Explain the notepad's features and integration with the chart and stopwatch.)
-**Stopwatch:** (Placeholder: Detail the stopwatch's capabilities and how it syncs with the data chart.)
-**Integration:** (Placeholder: Elaborate on how the three components work together.)
-**Markdown Support:** (Placeholder: Describe the Markdown features.)
-
-## Installation
-
-I really have no idea what I am doing, I am surprised this application (seemingly) works as well as it does, so please excuse any mistakes or bugs and post an issue please if you'd like.
-
-You can either grab the exe installer from the releases tab or clone the repo and run "npm run tauri (build/dev)" with the proper prerequisties from tauri v1. This application is built for and on windows, though I do plan on creating an android port next, with syncing between the two over the local network, linux support will come as well.
-
-## License
-
-You can do whatever you want with this, I made it speficially to help myself/people, view the [LICENSE.md](LICENSE.md) file for more details.
-=======
-<div align="center">
-
-# WORK IN PROGRESS
-
-</div>
-
-## Table of Contents
-
+- [Note](#note)
 - [Features](#features)
-- [Installation](#installation)
+- [Building & Installation](#building--installation)
 - [License](#license)
 
-## Note
+### Note
 
-I made this because Google Sheets is not for me and I was previously using a Google Sheets template made by Stevie, [here](https://youtu.be/2gIu00WcbTI?si=iOx1pcTTzlFZqkPm), for tracking data. I really liked it, minus a couple of features that were excessive for my use case, but this program largely aims to recreate a lot of the features I used in that document, like the projected calculations and differences etc.
+I made this because Google Sheets is not for me. I was previously using a template made by Stevie, [here](https://youtu.be/2gIu00WcbTI?si=iOx1pcTTzlFZqkPm), for data/stat tracking. I really like it, minus a couple of features that were excessive for my use case, but this program largely aims to recreate a lot of the features I used in that document, like the projected calculations, differences, etc.
 
 ## Features
 
-I will flesh this out later. Here are some supplementary screenshots:
+![ghshowcase](https://github.com/user-attachments/assets/595aece3-d527-40fa-919a-861bd176ae5d)
 
-![Screenshot 1](https://github.com/user-attachments/assets/417c8e92-60e0-4331-a961-2132e4423c1f)
+* placeholder
+* placeholder
+* placeholder
 
-![Screenshot 2](https://github.com/user-attachments/assets/7c2139b9-291d-4a94-9f3f-9684a984513c)
+## Building & Installation
 
-![Screenshot 3](https://github.com/user-attachments/assets/63524094-04fe-4f3b-9777-f5ee2f3b7a04)
+### Disclaimer: I really have no idea what I am doing.
+I am surprised this application (seemingly) works as well as it does, so please excuse any mistakes, bugs, or performance issues and please post an issue if you'd like.
 
-This looks terrible, but I will fix it later. There is also a formatting bug on the notes page, but it doesn't break functionality.
-
-## Installation
-
-I really have no idea what I am doing. I am surprised this application (seemingly) works as well as it does, so please excuse any mistakes or bugs and post an issue if you'd like.
-
-You can either grab the exe installer from the releases tab or clone the repo and run "npm run tauri (build/dev)" with the proper prerequisites from Tauri v1. This application is built for and on Windows, though I do plan on creating an Android port next, with syncing between the two over the local network. Linux support will come as well.
+You can simply download the prebuilt binary for windows in the releases section. To build it yourself, you first need to install the dependenice for Tauri [here](https://v2.tauri.app/start/prerequisites/) (I am using Tauri V1 in this project), and then run "npm run tauri build/dev" for the release and development version, respectivley.
 
 ## License
 
 You can do whatever you want with this. I made it specifically to help myself/people. View the [LICENSE.md](LICENSE.md) file for more details.
->>>>>>> e01603b36ba6e3272567e583a07a36cf4173656c
